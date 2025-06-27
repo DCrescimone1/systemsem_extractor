@@ -1,21 +1,41 @@
 """
-Processor for language correlation data
+Updated correlation_processor.py that generates the high-confidence values
 """
 
 from pathlib import Path
 from typing import Dict, Any
 import pandas as pd
 from .base_processor import BaseProcessor
+from .composite_similarity_calculator import CompositeSimilarityCalculator
 import config
 
 class CorrelationProcessor(BaseProcessor):
-    """Processes language correlation data from SYSTEMSEM CSV files"""
+    """Processes language correlation data and generates composite similarity scores"""
+    
+    def __init__(self, systemsem_path: Path):
+        super().__init__(systemsem_path)
+        self.composite_calculator = CompositeSimilarityCalculator()
     
     def process(self) -> Dict[str, Any]:
         """
-        Extract and process language correlation data
-        Returns: Dict with language pairs and their correlation scores
+        Extract SYSTEMSEM correlations and generate composite similarity scores
+        Returns: Dict with language pairs and their composite scores
         """
+        
+        # Step 1: Extract raw SYSTEMSEM correlations
+        raw_correlations = self._extract_systemsem_correlations()
+        
+        # Step 2: Generate composite similarities
+        composite_similarities = self._generate_composite_similarities(raw_correlations)
+        
+        # Step 3: Create the final output format for Memoria
+        memoria_format = self._format_for_memoria(composite_similarities)
+        
+        self.logger.info(f"✅ Generated composite similarities for {len(memoria_format)} language pairs")
+        return memoria_format
+    
+    def _extract_systemsem_correlations(self) -> Dict[str, float]:
+        """Extract raw semantic correlations from SYSTEMSEM CSV files"""
         correlations = {}
         
         # Find correlation files
@@ -29,14 +49,10 @@ class CorrelationProcessor(BaseProcessor):
         for file_path in correlation_files:
             self._process_correlation_file(file_path, correlations)
         
-        # Convert to standard language codes
-        standardized_correlations = self._standardize_language_codes(correlations)
-        
-        self.logger.info(f"✅ Processed correlations for {len(standardized_correlations)} language pairs")
-        return standardized_correlations
+        return correlations
     
     def _process_correlation_file(self, file_path: Path, correlations: Dict):
-        """Process a single correlation CSV file"""
+        """Process a single correlation CSV file to extract LOCAL correlations"""
         try:
             df = self.read_csv_safe(file_path)
             if df.empty:
@@ -48,90 +64,150 @@ class CorrelationProcessor(BaseProcessor):
                 self.logger.warning(f"Could not extract language pair from {file_path.name}")
                 return
             
-            # Process correlation data
-            correlation_score = self._calculate_average_correlation(df, file_path.name)
-            if correlation_score is not None:
-                correlations[f"{lang1}_{lang2}"] = correlation_score
-                self.logger.debug(f"Added correlation {lang1}-{lang2}: {correlation_score:.3f}")
+            # Extract LOCAL correlation (the semantic similarity we want)
+            local_correlation = self._extract_local_correlation(df, file_path.name)
+            if local_correlation is not None:
+                pair_key = f"{lang1}_{lang2}"
+                correlations[pair_key] = local_correlation
+                self.logger.debug(f"Added LOCAL correlation {lang1}-{lang2}: {local_correlation:.3f}")
+                
         except Exception as e:
             self.logger.warning(f"Failed to process {file_path.name}: {e}")
-            return
     
-    def _calculate_average_correlation(self, df: pd.DataFrame, filename: str = "") -> float:
-        """Calculate average correlation from SYSTEMSEM dataframe"""
+    def _extract_local_correlation(self, df: pd.DataFrame, filename: str = "") -> float:
+        """Extract LOCAL correlation from SYSTEMSEM dataframe"""
         try:
-            # Debug: print structure for first few files
-            self.logger.debug(f"CSV structure for {filename}: columns={list(df.columns)}, shape={df.shape}")
-            if len(df) > 0:
-                self.logger.debug(f"First few rows: {df.head(2).to_dict('records')}")
-            
-            # SYSTEMSEM files should now have proper column names after reading
-            if 'correlation' in df.columns:
-                # Perfect! Use the correlation column directly
-                correlation_values = pd.to_numeric(df['correlation'], errors='coerce').dropna()
+            # SYSTEMSEM format: cluster_count, type, correlation, lang1, lang2
+            if len(df.columns) >= 3:
+                df.columns = ['cluster_count', 'type', 'correlation', 'lang1', 'lang2'][:len(df.columns)]
                 
-                if len(correlation_values) > 0:
-                    # Filter reasonable correlation range [-1, 1]
-                    valid_correlations = correlation_values[(correlation_values >= -1.0) & (correlation_values <= 1.0)]
-                    
-                    if len(valid_correlations) > 0:
-                        avg_correlation = float(valid_correlations.mean())
-                        self.logger.debug(f"✅ {filename}: correlation column -> {avg_correlation:.4f} (from {len(valid_correlations)} values)")
-                        return avg_correlation
-                    else:
-                        self.logger.warning(f"❌ {filename}: No correlations in valid range [-1,1]")
-                        return None
-                else:
-                    self.logger.warning(f"❌ {filename}: No numeric values in correlation column")
-                    return None
-            
-            # Fallback: try to find correlation column by position (column index 2 for SYSTEMSEM)
-            elif len(df.columns) >= 3:
-                correlation_col = df.iloc[:, 2]  # Third column (index 2)
-                correlation_values = pd.to_numeric(correlation_col, errors='coerce').dropna()
+                # Filter for LOCAL correlations only (within-cluster semantic similarity)
+                local_df = df[df['type'] == 'local']
                 
-                if len(correlation_values) > 0:
-                    # Filter reasonable correlation range
-                    valid_correlations = correlation_values[(correlation_values >= -1.0) & (correlation_values <= 1.0)]
-                    
-                    if len(valid_correlations) > 0:
-                        avg_correlation = float(valid_correlations.mean())
-                        self.logger.debug(f"✅ {filename}: column[2] -> {avg_correlation:.4f} (from {len(valid_correlations)} values)")
-                        return avg_correlation
-                    else:
-                        self.logger.warning(f"❌ {filename}: Column[2] has no valid correlations in range [-1,1]")
-                        return None
-                else:
-                    self.logger.warning(f"❌ {filename}: Column[2] has no numeric values")
+                if local_df.empty:
+                    self.logger.warning(f"No LOCAL correlations found in {filename}")
                     return None
-            
+                
+                # Use 10-cluster solution (most stable according to research)
+                cluster_10_df = local_df[local_df['cluster_count'] == 10]
+                
+                if not cluster_10_df.empty:
+                    correlation_value = cluster_10_df['correlation'].iloc[0]
+                    self.logger.debug(f"Using 10-cluster LOCAL correlation: {correlation_value:.3f}")
+                else:
+                    # Fallback to mean LOCAL correlation if no 10-cluster data
+                    correlation_value = local_df['correlation'].mean()
+                    self.logger.debug(f"Using average LOCAL correlation: {correlation_value:.3f}")
+                
+                return correlation_value
+                
             else:
-                self.logger.warning(f"❌ {filename}: Insufficient columns ({len(df.columns)}). Expected SYSTEMSEM format: cluster,type,correlation,lang1,lang2")
+                self.logger.warning(f"Unexpected CSV format in {filename}")
                 return None
-            
+                
         except Exception as e:
-            self.logger.warning(f"❌ Error calculating correlation for {filename}: {e}")
+            self.logger.warning(f"❌ Error extracting LOCAL correlation from {filename}: {e}")
             return None
     
-    def _standardize_language_codes(self, correlations: Dict) -> Dict[str, Dict[str, float]]:
-        """Convert ETS language codes to standard codes and create nested structure"""
-        standardized = {}
+    def _generate_composite_similarities(self, raw_correlations: Dict[str, float]) -> Dict[str, Dict]:
+        """Generate composite similarity scores using the calculator"""
+        composite_similarities = {}
         
-        for pair_key, correlation in correlations.items():
+        # Convert SYSTEMSEM correlations to composite scores
+        for pair_key, correlation in raw_correlations.items():
             lang1, lang2 = pair_key.split('_')
             
-            # Convert to standard codes
+            # Convert to standard language codes
             std_lang1 = config.LANGUAGE_MAPPING.get(lang1.upper(), lang1.lower())
             std_lang2 = config.LANGUAGE_MAPPING.get(lang2.upper(), lang2.lower())
             
-            # Create nested structure
-            if std_lang1 not in standardized:
-                standardized[std_lang1] = {}
-            if std_lang2 not in standardized:
-                standardized[std_lang2] = {}
+            # Calculate composite similarity
+            composite_result = self.composite_calculator.calculate_composite_similarity(
+                std_lang1, std_lang2, correlation
+            )
             
-            # Add bidirectional mapping
-            standardized[std_lang1][std_lang2] = correlation
-            standardized[std_lang2][std_lang1] = correlation
+            # Store with standardized key
+            standard_key = f"{std_lang1}-{std_lang2}"
+            composite_similarities[standard_key] = composite_result
         
-        return standardized
+        # Add high-confidence pairs that might not be in SYSTEMSEM
+        self._add_high_confidence_pairs(composite_similarities)
+        
+        return composite_similarities
+    
+    def _add_high_confidence_pairs(self, similarities: Dict[str, Dict]):
+        """Add important language pairs that should have high confidence"""
+        important_pairs = [
+            ("es", "it"),  # Spanish-Italian (should be ~0.89)
+            ("es", "pt"),  # Spanish-Portuguese 
+            ("fr", "es"),  # French-Spanish (should be ~0.85)
+            ("en", "de"),  # English-German (should be ~0.68)
+            ("it", "fr"),  # Italian-French (should be ~0.78)
+            ("ru", "pl"),  # Russian-Polish
+            ("hi", "ur"),  # Hindi-Urdu
+        ]
+        
+        for lang1, lang2 in important_pairs:
+            key1 = f"{lang1}-{lang2}"
+            key2 = f"{lang2}-{lang1}"
+            
+            # Only add if not already present
+            if key1 not in similarities and key2 not in similarities:
+                composite_result = self.composite_calculator.calculate_composite_similarity(lang1, lang2)
+                similarities[key1] = composite_result
+                self.logger.info(f"Added high-confidence pair {key1}: {composite_result['score']:.3f}")
+    
+    def _format_for_memoria(self, composite_similarities: Dict[str, Dict]) -> Dict[str, Dict]:
+        """Format composite similarities for Memoria application"""
+        memoria_format = {}
+        
+        for pair_key, similarity_data in composite_similarities.items():
+            # Create the format expected by Memoria
+            memoria_format[pair_key.upper()] = {
+                "global": similarity_data["global"],
+                "local": similarity_data["local"], 
+                "confidence": similarity_data["confidence"],
+                "strategy": similarity_data["strategy"],
+                "breakdown": similarity_data["breakdown"],
+                "evidence": similarity_data["evidence_sources"]
+            }
+        
+        return memoria_format
+
+
+# Test the updated processor
+def test_updated_processor():
+    """Test the updated correlation processor"""
+    from pathlib import Path
+    
+    # Create mock processor for testing
+    processor = CorrelationProcessor(Path("/mock/path"))
+    
+    # Test composite calculation directly
+    calculator = CompositeSimilarityCalculator()
+    
+    print("=== Testing Updated Correlation Processor ===\n")
+    
+    # Test cases that should produce the high-confidence values you mentioned
+    test_cases = [
+        ("es", "it", 0.58),  # Should become ~0.89
+        ("fr", "es", 0.52),  # Should become ~0.85  
+        ("en", "de", 0.45),  # Should become ~0.68
+        ("it", "fr", 0.48),  # Should become ~0.78
+    ]
+    
+    for lang1, lang2, systemsem_corr in test_cases:
+        result = calculator.calculate_composite_similarity(lang1, lang2, systemsem_corr)
+        
+        print(f"{lang1.upper()}-{lang2.upper()}:")
+        print(f"  Raw SYSTEMSEM: {systemsem_corr:.3f}")
+        print(f"  Composite Score: {result['score']:.3f}")
+        print(f"  Global: {result['global']:.3f}")
+        print(f"  Local: {result['local']:.3f}")
+        print(f"  Confidence: {result['confidence']}")
+        print(f"  Strategy: {result['strategy']}")
+        print(f"  Breakdown: {result['breakdown']}")
+        print()
+
+if __name__ == "__main__":
+    test_updated_processor()

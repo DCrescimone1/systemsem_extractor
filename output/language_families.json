@@ -4,169 +4,250 @@
     "languages_count": 35
   },
   "families": {
-    "en": {
-      "family": "Germanic",
-      "branch": "West Germanic"
+    "ar": {
+      "family": "Afro-Asiatic",
+      "branch": "Semitic",
+      "sub_branch": "Central Semitic",
+      "ets_code": "ARA",
+      "source": "comprehensive_database"
     },
-    "es": {
-      "family": "Romance",
-      "branch": "Ibero-Romance"
+    "bn": {
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Eastern Indo-Aryan",
+      "ets_code": "BEN",
+      "source": "comprehensive_database"
     },
-    "fr": {
-      "family": "Romance",
-      "branch": "Gallo-Romance"
-    },
-    "de": {
-      "family": "Germanic",
-      "branch": "West Germanic"
-    },
-    "it": {
-      "family": "Romance",
-      "branch": "Italo-Western"
-    },
-    "pt": {
-      "family": "Romance",
-      "branch": "Ibero-Romance"
-    },
-    "ru": {
-      "family": "Slavic",
-      "branch": "East Slavic"
+    "bg": {
+      "family": "Indo-European",
+      "branch": "Slavic",
+      "sub_branch": "South Slavic",
+      "ets_code": "BUL",
+      "source": "comprehensive_database"
     },
     "zh": {
       "family": "Sino-Tibetan",
-      "branch": "Chinese"
+      "branch": "Chinese",
+      "sub_branch": "Mandarin",
+      "ets_code": "CHI",
+      "source": "comprehensive_database"
     },
-    "ja": {
-      "family": "Japonic",
-      "branch": "Japanese"
+    "nl": {
+      "family": "Indo-European",
+      "branch": "Germanic",
+      "sub_branch": "West Germanic",
+      "ets_code": "DUT",
+      "source": "comprehensive_database"
     },
-    "ar": {
-      "family": "Semitic",
-      "branch": "Central Semitic"
+    "en": {
+      "family": "Indo-European",
+      "branch": "Germanic",
+      "sub_branch": "West Germanic",
+      "ets_code": "ENG",
+      "source": "comprehensive_database"
+    },
+    "fa": {
+      "family": "Indo-European",
+      "branch": "Iranian",
+      "sub_branch": "Western Iranian",
+      "ets_code": "FAS",
+      "source": "comprehensive_database"
+    },
+    "fr": {
+      "family": "Indo-European",
+      "branch": "Romance",
+      "sub_branch": "Gallo-Romance",
+      "ets_code": "FRE",
+      "source": "comprehensive_database"
+    },
+    "de": {
+      "family": "Indo-European",
+      "branch": "Germanic",
+      "sub_branch": "West Germanic",
+      "ets_code": "GER",
+      "source": "comprehensive_database"
+    },
+    "el": {
+      "family": "Indo-European",
+      "branch": "Hellenic",
+      "sub_branch": "Greek",
+      "ets_code": "GRE",
+      "source": "comprehensive_database"
+    },
+    "gu": {
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Western Indo-Aryan",
+      "ets_code": "GUJ",
+      "source": "comprehensive_database"
     },
     "hi": {
       "family": "Indo-European",
-      "branch": "Indo-Aryan"
-    },
-    "bn": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "BEN"
-    },
-    "bg": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "BUL"
-    },
-    "nl": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "DUT"
-    },
-    "fa": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "FAS"
-    },
-    "el": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "GRE"
-    },
-    "gu": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "GUJ"
+      "branch": "Indo-Aryan",
+      "sub_branch": "Central Indo-Aryan",
+      "ets_code": "HIN",
+      "source": "comprehensive_database"
     },
     "ig": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "IBO"
+      "family": "Niger-Congo",
+      "branch": "Volta-Niger",
+      "sub_branch": "Igboid",
+      "ets_code": "IBO",
+      "source": "comprehensive_database"
     },
     "id": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "IND"
+      "family": "Austronesian",
+      "branch": "Malayo-Polynesian",
+      "sub_branch": "Western Malayo-Polynesian",
+      "ets_code": "IND",
+      "source": "comprehensive_database"
+    },
+    "it": {
+      "family": "Indo-European",
+      "branch": "Romance",
+      "sub_branch": "Italo-Western",
+      "ets_code": "ITA",
+      "source": "comprehensive_database"
+    },
+    "ja": {
+      "family": "Japonic",
+      "branch": "Japanese",
+      "sub_branch": "Japanese",
+      "ets_code": "JPN",
+      "source": "comprehensive_database"
     },
     "kn": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "KAN"
+      "family": "Dravidian",
+      "branch": "Southern Dravidian",
+      "sub_branch": "Tamil-Kannada",
+      "ets_code": "KAN",
+      "source": "comprehensive_database"
     },
     "ko": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "KOR"
+      "family": "Koreanic",
+      "branch": "Korean",
+      "sub_branch": "Korean",
+      "ets_code": "KOR",
+      "source": "comprehensive_database"
     },
     "ml": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "MAL"
+      "family": "Dravidian",
+      "branch": "Southern Dravidian",
+      "sub_branch": "Tamil-Malayalam",
+      "ets_code": "MAL",
+      "source": "comprehensive_database"
     },
     "mr": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "MAR"
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Southern Indo-Aryan",
+      "ets_code": "MAR",
+      "source": "comprehensive_database"
     },
     "ne": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "NEP"
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Northern Indo-Aryan",
+      "ets_code": "NEP",
+      "source": "comprehensive_database"
     },
     "pa": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "PAN"
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Northwestern Indo-Aryan",
+      "ets_code": "PAN",
+      "source": "comprehensive_database"
     },
     "pl": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "POL"
+      "family": "Indo-European",
+      "branch": "Slavic",
+      "sub_branch": "West Slavic",
+      "ets_code": "POL",
+      "source": "comprehensive_database"
+    },
+    "pt": {
+      "family": "Indo-European",
+      "branch": "Romance",
+      "sub_branch": "Ibero-Romance",
+      "ets_code": "POR",
+      "source": "comprehensive_database"
     },
     "ro": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "RUM"
+      "family": "Indo-European",
+      "branch": "Romance",
+      "sub_branch": "Eastern Romance",
+      "ets_code": "RUM",
+      "source": "comprehensive_database"
+    },
+    "ru": {
+      "family": "Indo-European",
+      "branch": "Slavic",
+      "sub_branch": "East Slavic",
+      "ets_code": "RUS",
+      "source": "comprehensive_database"
+    },
+    "es": {
+      "family": "Indo-European",
+      "branch": "Romance",
+      "sub_branch": "Ibero-Romance",
+      "ets_code": "SPA",
+      "source": "comprehensive_database"
     },
     "ta": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "TAM"
+      "family": "Dravidian",
+      "branch": "Southern Dravidian",
+      "sub_branch": "Tamil-Malayalam",
+      "ets_code": "TAM",
+      "source": "comprehensive_database"
     },
     "te": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "TEL"
+      "family": "Dravidian",
+      "branch": "South-Central Dravidian",
+      "sub_branch": "Telugu",
+      "ets_code": "TEL",
+      "source": "comprehensive_database"
     },
     "tl": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "TGL"
+      "family": "Austronesian",
+      "branch": "Malayo-Polynesian",
+      "sub_branch": "Philippine",
+      "ets_code": "TGL",
+      "source": "comprehensive_database"
     },
     "th": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "THA"
+      "family": "Tai-Kadai",
+      "branch": "Tai",
+      "sub_branch": "Southwestern Tai",
+      "ets_code": "THA",
+      "source": "comprehensive_database"
     },
     "tr": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "TUR"
+      "family": "Turkic",
+      "branch": "Southwestern Turkic",
+      "sub_branch": "Turkish",
+      "ets_code": "TUR",
+      "source": "comprehensive_database"
     },
     "ur": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "URD"
+      "family": "Indo-European",
+      "branch": "Indo-Aryan",
+      "sub_branch": "Central Indo-Aryan",
+      "ets_code": "URD",
+      "source": "comprehensive_database"
     },
     "vi": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "VIE"
+      "family": "Austroasiatic",
+      "branch": "Vietic",
+      "sub_branch": "Vietnamese",
+      "ets_code": "VIE",
+      "source": "comprehensive_database"
     },
     "yo": {
-      "family": "Unknown",
-      "branch": "Unknown",
-      "ets_code": "YOR"
+      "family": "Niger-Congo",
+      "branch": "Volta-Niger",
+      "sub_branch": "Defoid",
+      "ets_code": "YOR",
+      "source": "comprehensive_database"
     }
   }
 }

@@ -3050,3 +3050,64 @@
 2025-06-27 16:41:41,229 - main - INFO -    📄 output/systemsem_correlations.json: 35 records
 2025-06-27 16:41:41,229 - main - INFO -    📄 output/language_families.json: 35 records
 2025-06-27 16:41:41,229 - main - INFO - 🎯 Ready for memoria_test integration!
+2025-06-27 17:13:02,076 - main - INFO - 🚀 Starting SYSTEMSEM data extraction
+2025-06-27 17:13:02,077 - main - INFO - 📁 Source: /Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main
+2025-06-27 17:13:02,077 - main - INFO - 📂 Output: output
+2025-06-27 17:13:02,077 - SystemsemExtractor - INFO - 🔄 Starting data extraction process
+2025-06-27 17:13:02,077 - SystemsemExtractor - INFO - 📊 Processing language correlations...
+2025-06-27 17:13:02,083 - CorrelationProcessor - INFO - 📊 Processing 595 correlation files
+2025-06-27 17:13:02,747 - CorrelationProcessor - INFO - ✅ Generated composite similarities for 595 language pairs
+2025-06-27 17:13:02,760 - JsonGenerator - INFO - 📄 Generated correlations JSON: output/systemsem_correlations.json
+2025-06-27 17:13:02,760 - SystemsemExtractor - INFO - 🌳 Processing language families...
+2025-06-27 17:13:02,783 - LanguageFamilyProcessor - INFO - 🌳 Processing 0 language family files
+2025-06-27 17:13:02,783 - LanguageFamilyProcessor - INFO - ✅ Processed family data for 35 languages
+2025-06-27 17:13:02,784 - JsonGenerator - INFO - 🌳 Generated families JSON: output/language_families.json
+2025-06-27 17:13:02,784 - SystemsemExtractor - INFO - 📚 Processing historical contact data...
+2025-06-27 17:13:02,791 - SystemsemExtractor - INFO - ℹ️ No historical contact data found
+2025-06-27 17:13:02,791 - SystemsemExtractor - INFO - ✅ Extracted 2 datasets
+2025-06-27 17:13:02,791 - main - INFO - ✅ Extraction completed successfully!
+2025-06-27 17:13:02,791 - main - INFO - 📊 Generated files:
+2025-06-27 17:13:02,791 - main - INFO -    📄 output/systemsem_correlations.json: 595 records
+2025-06-27 17:13:02,791 - main - INFO -    📄 output/language_families.json: 35 records
+2025-06-27 17:13:02,791 - main - INFO - 🎯 Ready for memoria_test integration!
+2025-06-27 17:18:22,669 - main - INFO - 🚀 Starting SYSTEMSEM data extraction
+2025-06-27 17:18:22,670 - main - INFO - 📁 Source: /Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main
+2025-06-27 17:18:22,670 - main - INFO - 📂 Output: output
+2025-06-27 17:18:22,670 - SystemsemExtractor - INFO - 🔄 Starting data extraction process
+2025-06-27 17:18:22,670 - SystemsemExtractor - INFO - 📊 Processing language correlations...
+2025-06-27 17:18:22,673 - CorrelationProcessor - INFO - 📊 Processing 595 correlation files
+2025-06-27 17:18:23,317 - CorrelationProcessor - INFO - ✅ Generated composite similarities for 595 language pairs
+2025-06-27 17:18:23,331 - JsonGenerator - INFO - 📄 Generated correlations JSON: output/systemsem_correlations.json
+2025-06-27 17:18:23,331 - SystemsemExtractor - INFO - 🌳 Processing language families...
+2025-06-27 17:18:23,347 - LanguageFamilyProcessor - INFO - 🌳 Processing 0 language family files
+2025-06-27 17:18:23,347 - LanguageFamilyProcessor - INFO - ✅ Processed family data for 35 languages
+2025-06-27 17:18:23,348 - JsonGenerator - INFO - 🌳 Generated families JSON: output/language_families.json
+2025-06-27 17:18:23,348 - SystemsemExtractor - INFO - 📚 Processing historical contact data...
+2025-06-27 17:18:23,355 - SystemsemExtractor - INFO - ℹ️ No historical contact data found
+2025-06-27 17:18:23,355 - SystemsemExtractor - INFO - ✅ Extracted 2 datasets
+2025-06-27 17:18:23,356 - main - INFO - ✅ Extraction completed successfully!
+2025-06-27 17:18:23,356 - main - INFO - 📊 Generated files:
+2025-06-27 17:18:23,356 - main - INFO -    📄 output/systemsem_correlations.json: 595 records
+2025-06-27 17:18:23,356 - main - INFO -    📄 output/language_families.json: 35 records
+2025-06-27 17:18:23,356 - main - INFO - 🎯 Ready for memoria_test integration!
+2025-06-27 17:22:39,363 - main - INFO - 🚀 Starting SYSTEMSEM data extraction
+2025-06-27 17:22:39,364 - main - INFO - 📁 Source: /Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main
+2025-06-27 17:22:39,364 - main - INFO - 📂 Output: output
+2025-06-27 17:22:39,364 - SystemsemExtractor - INFO - 🔄 Starting data extraction process
+2025-06-27 17:22:39,364 - SystemsemExtractor - INFO - 📊 Processing language correlations...
+2025-06-27 17:22:39,369 - CorrelationProcessor - INFO - 📊 Processing 595 correlation files
+2025-06-27 17:22:40,015 - CorrelationProcessor - INFO - ✅ Generated composite similarities for 595 language pairs
+2025-06-27 17:22:40,029 - JsonGenerator - INFO - 📄 Generated correlations JSON: output/systemsem_correlations.json
+2025-06-27 17:22:40,029 - SystemsemExtractor - INFO - 🌳 Processing language families...
+2025-06-27 17:22:40,041 - LanguageFamilyProcessor - INFO - Found WALS mapping file: /Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main/analyses/04_predicting_semantic_sim/data/lang_distance_metrics/linguistic/data/iso_to_wals_for_ling_dists.csv
+2025-06-27 17:22:40,044 - LanguageFamilyProcessor - WARNING - No WALS mapping found in SYSTEMSEM, using comprehensive database
+2025-06-27 17:22:40,044 - LanguageFamilyProcessor - INFO - ✅ Processed family data for 35 languages
+2025-06-27 17:22:40,045 - JsonGenerator - INFO - 🌳 Generated families JSON: output/language_families.json
+2025-06-27 17:22:40,045 - SystemsemExtractor - INFO - 📚 Processing historical contact data...
+2025-06-27 17:22:40,052 - SystemsemExtractor - INFO - ℹ️ No historical contact data found
+2025-06-27 17:22:40,052 - SystemsemExtractor - INFO - ✅ Extracted 2 datasets
+2025-06-27 17:22:40,052 - main - INFO - ✅ Extraction completed successfully!
+2025-06-27 17:22:40,052 - main - INFO - 📊 Generated files:
+2025-06-27 17:22:40,052 - main - INFO -    📄 output/systemsem_correlations.json: 595 records
+2025-06-27 17:22:40,052 - main - INFO -    📄 output/language_families.json: 35 records
+2025-06-27 17:22:40,052 - main - INFO - 🎯 Ready for memoria_test integration!
