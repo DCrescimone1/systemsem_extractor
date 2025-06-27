@@ -5,8 +5,8 @@ Configuration settings for SYSTEMSEM data extraction
 import os
 from pathlib import Path
 
-# SYSTEMSEM project path - UPDATE THIS TO YOUR SYSTEMSEM LOCATION
-SYSTEMSEM_PATH = "/path/to/your/SYSTEMSEM"  # CHANGE THIS!
+# SYSTEMSEM project path
+SYSTEMSEM_PATH = "/Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main"
 
 # Output directory
 OUTPUT_DIR = Path("output")
@@ -38,7 +38,7 @@ LANGUAGE_MAPPING = {
 
 # Logging configuration
 LOGGING_CONFIG = {
-    "level": "INFO",
+    "level": "INFO",  # Back to INFO now that we understand the structure
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     "file": OUTPUT_DIR / "extraction_log.txt"
 }

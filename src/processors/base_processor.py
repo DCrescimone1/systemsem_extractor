@@ -38,11 +38,52 @@ class BaseProcessor(ABC):
     def read_csv_safe(self, file_path: Path) -> pd.DataFrame:
         """Safely read CSV file with error handling"""
         try:
-            df = pd.read_csv(file_path)
-            self.logger.debug(f"Read {len(df)} rows from {file_path.name}")
-            return df
+            # SYSTEMSEM correlation files have NO HEADERS
+            # Format: cluster_count,type,correlation,lang1,lang2
+            # Example: 10,global,0.364,en,tr
+            
+            read_strategies = [
+                # Strategy 1: No header (correct for SYSTEMSEM files)
+                {'header': None, 'encoding': 'utf-8'},
+                # Strategy 2: Different separators without header
+                {'header': None, 'encoding': 'utf-8', 'sep': ','},
+                {'header': None, 'encoding': 'utf-8', 'sep': '\t'},
+                # Strategy 3: Different encodings without header
+                {'header': None, 'encoding': 'latin-1'},
+                {'header': None, 'encoding': 'cp1252'},
+                # Strategy 4: Skip problematic lines without header
+                {'header': None, 'encoding': 'utf-8', 'on_bad_lines': 'skip'},
+            ]
+            
+            for i, strategy in enumerate(read_strategies):
+                try:
+                    df = pd.read_csv(file_path, **strategy)
+                    if not df.empty and len(df.columns) >= 3:
+                        # Assign proper column names for SYSTEMSEM format
+                        df.columns = ['n_clusters', 'type', 'correlation', 'lang1', 'lang2'][:len(df.columns)]
+                        self.logger.debug(f"✅ Read {file_path.name} with strategy {i+1}: {len(df)} rows, {len(df.columns)} cols")
+                        return df
+                except (UnicodeDecodeError, pd.errors.ParserError) as e:
+                    self.logger.debug(f"Strategy {i+1} failed for {file_path.name}: {e}")
+                    continue
+                except Exception as e:
+                    self.logger.debug(f"Strategy {i+1} error for {file_path.name}: {e}")
+                    continue
+            
+            # Last resort: read with maximum error tolerance
+            try:
+                df = pd.read_csv(file_path, header=None, encoding='utf-8', errors='ignore', 
+                               on_bad_lines='skip', engine='python')
+                if not df.empty and len(df.columns) >= 3:
+                    df.columns = ['n_clusters', 'type', 'correlation', 'lang1', 'lang2'][:len(df.columns)]
+                self.logger.warning(f"⚠️ Read {file_path.name} with error tolerance: {len(df)} rows")
+                return df
+            except Exception as e:
+                self.logger.error(f"❌ All strategies failed for {file_path.name}: {e}")
+                return pd.DataFrame()
+            
         except Exception as e:
-            self.logger.warning(f"Failed to read {file_path}: {e}")
+            self.logger.warning(f"❌ Completely failed to read {file_path}: {e}")
             return pd.DataFrame()
     
     def extract_language_pair(self, filename: str) -> tuple:

@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "description": "Language family classifications and relationships",
+    "languages_count": 35
+  },
+  "families": {
+    "en": {
+      "family": "Germanic",
+      "branch": "West Germanic"
+    },
+    "es": {
+      "family": "Romance",
+      "branch": "Ibero-Romance"
+    },
+    "fr": {
+      "family": "Romance",
+      "branch": "Gallo-Romance"
+    },
+    "de": {
+      "family": "Germanic",
+      "branch": "West Germanic"
+    },
+    "it": {
+      "family": "Romance",
+      "branch": "Italo-Western"
+    },
+    "pt": {
+      "family": "Romance",
+      "branch": "Ibero-Romance"
+    },
+    "ru": {
+      "family": "Slavic",
+      "branch": "East Slavic"
+    },
+    "zh": {
+      "family": "Sino-Tibetan",
+      "branch": "Chinese"
+    },
+    "ja": {
+      "family": "Japonic",
+      "branch": "Japanese"
+    },
+    "ar": {
+      "family": "Semitic",
+      "branch": "Central Semitic"
+    },
+    "hi": {
+      "family": "Indo-European",
+      "branch": "Indo-Aryan"
+    },
+    "bn": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "BEN"
+    },
+    "bg": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "BUL"
+    },
+    "nl": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "DUT"
+    },
+    "fa": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "FAS"
+    },
+    "el": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "GRE"
+    },
+    "gu": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "GUJ"
+    },
+    "ig": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "IBO"
+    },
+    "id": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "IND"
+    },
+    "kn": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "KAN"
+    },
+    "ko": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "KOR"
+    },
+    "ml": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "MAL"
+    },
+    "mr": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "MAR"
+    },
+    "ne": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "NEP"
+    },
+    "pa": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "PAN"
+    },
+    "pl": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "POL"
+    },
+    "ro": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "RUM"
+    },
+    "ta": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "TAM"
+    },
+    "te": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "TEL"
+    },
+    "tl": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "TGL"
+    },
+    "th": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "THA"
+    },
+    "tr": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "TUR"
+    },
+    "ur": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "URD"
+    },
+    "vi": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "VIE"
+    },
+    "yo": {
+      "family": "Unknown",
+      "branch": "Unknown",
+      "ets_code": "YOR"
+    }
+  }
+}

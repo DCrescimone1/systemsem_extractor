@@ -1,0 +1,694 @@
+Folder structure:
+.
+├── config.py
+├── main.py
+├── output
+│   ├── extraction_log.txt
+│   ├── language_families.json
+│   └── systemsem_correlations.json
+├── project_dump.sh
+├── README.md
+├── requirements.txt
+├── src
+│   ├── __init__.py
+│   ├── extractor.py
+│   ├── generators
+│   │   ├── __init__.py
+│   │   └── json_generator.py
+│   ├── processors
+│   │   ├── __init__.py
+│   │   ├── base_processor.py
+│   │   ├── correlation_processor.py
+│   │   └── language_family_processor.py
+│   └── utils
+│       ├── __init__.py
+│       ├── file_utils.py
+│       └── logger.py
+└── systemsem_extractor_dump.txt
+
+6 directories, 20 files
+
+
+--- File Contents ---
+
+
+------------------------------------------------- ./config.py --------------------------------------------------
+
+"""
+Configuration settings for SYSTEMSEM data extraction
+"""
+
+import os
+from pathlib import Path
+
+# SYSTEMSEM project path
+SYSTEMSEM_PATH = "/Users/dannycrescimone/Documents/GitHub/SYSTEMSEM-main"
+
+# Output directory
+OUTPUT_DIR = Path("output")
+
+# Key data paths within SYSTEMSEM
+DATA_PATHS = {
+    "correlations": "analyses/02_concreteness_semantics/data/wiki/mean_cluster_corrs",
+    "language_metrics": "analyses/04_predicting_semantic_sim/data/lang_distance_metrics",
+    "swadesh": "analyses/03_swadesh/data",
+}
+
+# File patterns to extract
+FILE_PATTERNS = {
+    "pairwise_correlations": "*pairwise_semantics_correlations_*.csv",
+    "language_distance": "*language_distance*.csv",
+    "swadesh_correlations": "*swadesh_correlations*.csv",
+}
+
+# Language codes mapping (ETS to standard codes)
+LANGUAGE_MAPPING = {
+    "ARA": "ar", "BEN": "bn", "BUL": "bg", "CHI": "zh", "DUT": "nl",
+    "ENG": "en", "FAS": "fa", "FRE": "fr", "GER": "de", "GRE": "el",
+    "GUJ": "gu", "HIN": "hi", "IBO": "ig", "IND": "id", "ITA": "it",
+    "JPN": "ja", "KAN": "kn", "KOR": "ko", "MAL": "ml", "MAR": "mr",
+    "NEP": "ne", "PAN": "pa", "POL": "pl", "POR": "pt", "RUM": "ro",
+    "RUS": "ru", "SPA": "es", "TAM": "ta", "TEL": "te", "TGL": "tl",
+    "THA": "th", "TUR": "tr", "URD": "ur", "VIE": "vi", "YOR": "yo"
+}
+
+# Logging configuration
+LOGGING_CONFIG = {
+    "level": "INFO",  # Back to INFO now that we understand the structure
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": OUTPUT_DIR / "extraction_log.txt"
+}
+------------------------------------------------- ./main.py --------------------------------------------------
+
+#!/usr/bin/env python3
+"""
+SYSTEMSEM Data Extractor - Main Entry Point
+
+Extracts correlation data from SYSTEMSEM research for memoria_test integration.
+"""
+
+import sys
+from pathlib import Path
+from src.extractor import SystemsemExtractor
+from src.utils.logger import setup_logger
+import config
+
+def main():
+    """Main extraction process"""
+    
+    # Setup logging
+    logger = setup_logger("main")
+    
+    logger.info("🚀 Starting SYSTEMSEM data extraction")
+    logger.info(f"📁 Source: {config.SYSTEMSEM_PATH}")
+    logger.info(f"📂 Output: {config.OUTPUT_DIR}")
+    
+    # Validate SYSTEMSEM path
+    if not Path(config.SYSTEMSEM_PATH).exists():
+        logger.error(f"❌ SYSTEMSEM path not found: {config.SYSTEMSEM_PATH}")
+        logger.error("Please update SYSTEMSEM_PATH in config.py")
+        sys.exit(1)
+    
+    # Create output directory
+    config.OUTPUT_DIR.mkdir(exist_ok=True)
+    
+    try:
+        # Initialize extractor
+        extractor = SystemsemExtractor(config.SYSTEMSEM_PATH)
+        
+        # Run extraction
+        results = extractor.extract_all()
+        
+        # Report results
+        logger.info("✅ Extraction completed successfully!")
+        logger.info("📊 Generated files:")
+        for file_path, record_count in results.items():
+            logger.info(f"   📄 {file_path}: {record_count} records")
+        
+        logger.info("🎯 Ready for memoria_test integration!")
+        
+    except Exception as e:
+        logger.error(f"❌ Extraction failed: {str(e)}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+------------------------------------------------- ./src/__init__.py --------------------------------------------------
+
+"""SYSTEMSEM Data Extractor Package"""
+------------------------------------------------- ./src/utils/__init__.py --------------------------------------------------
+
+"""Utility functions and helpers"""
+------------------------------------------------- ./src/utils/logger.py --------------------------------------------------
+
+"""
+Logging utilities
+"""
+
+import logging
+import sys
+from pathlib import Path
+import config
+
+def setup_logger(name: str) -> logging.Logger:
+    """Setup logger with consistent formatting"""
+    logger = logging.getLogger(name)
+    
+    # Avoid duplicate handlers
+    if logger.handlers:
+        return logger
+    
+    logger.setLevel(getattr(logging, config.LOGGING_CONFIG["level"]))
+    
+    # Console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    
+    # File handler
+    config.OUTPUT_DIR.mkdir(exist_ok=True)
+    file_handler = logging.FileHandler(config.LOGGING_CONFIG["file"])
+    file_handler.setLevel(logging.DEBUG)
+    
+    # Formatter
+    formatter = logging.Formatter(config.LOGGING_CONFIG["format"])
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    
+    return logger
+------------------------------------------------- ./src/utils/file_utils.py --------------------------------------------------
+
+"""
+File handling utilities
+"""
+
+from pathlib import Path
+from typing import List
+import fnmatch
+
+def find_files_by_pattern(directory: Path, pattern: str) -> List[Path]:
+    """Find files matching a pattern in directory and subdirectories"""
+    matches = []
+    for file_path in directory.rglob("*"):
+        if file_path.is_file() and fnmatch.fnmatch(file_path.name, pattern):
+            matches.append(file_path)
+    return matches
+
+def ensure_directory(path: Path) -> Path:
+    """Ensure directory exists, create if needed"""
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+def get_file_size_mb(file_path: Path) -> float:
+    """Get file size in megabytes"""
+    if file_path.exists():
+        return file_path.stat().st_size / (1024 * 1024)
+    return 0.0
+------------------------------------------------- ./src/extractor.py --------------------------------------------------
+
+"""
+Main SYSTEMSEM data extractor class
+"""
+
+from pathlib import Path
+from typing import Dict, Any
+from .processors.correlation_processor import CorrelationProcessor
+from .processors.language_family_processor import LanguageFamilyProcessor
+from .generators.json_generator import JsonGenerator
+from .utils.logger import setup_logger
+import config
+
+class SystemsemExtractor:
+    """Main extractor class that coordinates data extraction from SYSTEMSEM"""
+    
+    def __init__(self, systemsem_path: str):
+        self.systemsem_path = Path(systemsem_path)
+        self.logger = setup_logger(self.__class__.__name__)
+        self.json_generator = JsonGenerator()
+        
+        # Initialize processors
+        self.processors = {
+            'correlations': CorrelationProcessor(self.systemsem_path),
+            'language_families': LanguageFamilyProcessor(self.systemsem_path)
+        }
+    
+    def extract_all(self) -> Dict[str, int]:
+        """
+        Extract all data and generate JSON files
+        Returns dict of generated files and their record counts
+        """
+        results = {}
+        
+        self.logger.info("🔄 Starting data extraction process")
+        
+        # Extract language correlations
+        self.logger.info("📊 Processing language correlations...")
+        correlations_data = self.processors['correlations'].process()
+        correlation_file = self.json_generator.generate_correlations_json(correlations_data)
+        results[correlation_file] = len(correlations_data)
+        
+        # Extract language families
+        self.logger.info("🌳 Processing language families...")
+        families_data = self.processors['language_families'].process()
+        families_file = self.json_generator.generate_families_json(families_data)
+        results[families_file] = len(families_data)
+        
+        # Extract historical contact (if available)
+        self.logger.info("📚 Processing historical contact data...")
+        contact_data = self._extract_historical_contact()
+        if contact_data:
+            contact_file = self.json_generator.generate_contact_json(contact_data)
+            results[contact_file] = len(contact_data)
+        
+        self.logger.info(f"✅ Extracted {len(results)} datasets")
+        return results
+    
+    def _extract_historical_contact(self) -> Dict[str, Any]:
+        """Extract historical contact data if available"""
+        # Look for historical contact files
+        contact_files = list(self.systemsem_path.rglob("*historical*contact*.csv"))
+        
+        if not contact_files:
+            self.logger.info("ℹ️ No historical contact data found")
+            return {}
+        
+        # Simple extraction - can be expanded later
+        self.logger.info(f"📖 Found {len(contact_files)} contact files")
+        return {"files_found": len(contact_files)}  # Placeholder
+------------------------------------------------- ./src/processors/correlation_processor.py --------------------------------------------------
+
+"""
+Processor for language correlation data
+"""
+
+from pathlib import Path
+from typing import Dict, Any
+import pandas as pd
+from .base_processor import BaseProcessor
+import config
+
+class CorrelationProcessor(BaseProcessor):
+    """Processes language correlation data from SYSTEMSEM CSV files"""
+    
+    def process(self) -> Dict[str, Any]:
+        """
+        Extract and process language correlation data
+        Returns: Dict with language pairs and their correlation scores
+        """
+        correlations = {}
+        
+        # Find correlation files
+        correlation_files = self.find_files(
+            config.FILE_PATTERNS["pairwise_correlations"],
+            [config.DATA_PATHS["correlations"]]
+        )
+        
+        self.logger.info(f"📊 Processing {len(correlation_files)} correlation files")
+        
+        for file_path in correlation_files:
+            self._process_correlation_file(file_path, correlations)
+        
+        # Convert to standard language codes
+        standardized_correlations = self._standardize_language_codes(correlations)
+        
+        self.logger.info(f"✅ Processed correlations for {len(standardized_correlations)} language pairs")
+        return standardized_correlations
+    
+    def _process_correlation_file(self, file_path: Path, correlations: Dict):
+        """Process a single correlation CSV file"""
+        try:
+            df = self.read_csv_safe(file_path)
+            if df.empty:
+                return
+            
+            # Extract language pair from filename
+            lang1, lang2 = self.extract_language_pair(file_path.name)
+            if not lang1 or not lang2:
+                self.logger.warning(f"Could not extract language pair from {file_path.name}")
+                return
+            
+            # Process correlation data
+            correlation_score = self._calculate_average_correlation(df, file_path.name)
+            if correlation_score is not None:
+                correlations[f"{lang1}_{lang2}"] = correlation_score
+                self.logger.debug(f"Added correlation {lang1}-{lang2}: {correlation_score:.3f}")
+        except Exception as e:
+            self.logger.warning(f"Failed to process {file_path.name}: {e}")
+            return
+    
+    def _calculate_average_correlation(self, df: pd.DataFrame, filename: str = "") -> float:
+        """Calculate average correlation from SYSTEMSEM dataframe"""
+        try:
+            # Debug: print structure for first few files
+            self.logger.debug(f"CSV structure for {filename}: columns={list(df.columns)}, shape={df.shape}")
+            if len(df) > 0:
+                self.logger.debug(f"First few rows: {df.head(2).to_dict('records')}")
+            
+            # SYSTEMSEM files should now have proper column names after reading
+            if 'correlation' in df.columns:
+                # Perfect! Use the correlation column directly
+                correlation_values = pd.to_numeric(df['correlation'], errors='coerce').dropna()
+                
+                if len(correlation_values) > 0:
+                    # Filter reasonable correlation range [-1, 1]
+                    valid_correlations = correlation_values[(correlation_values >= -1.0) & (correlation_values <= 1.0)]
+                    
+                    if len(valid_correlations) > 0:
+                        avg_correlation = float(valid_correlations.mean())
+                        self.logger.debug(f"✅ {filename}: correlation column -> {avg_correlation:.4f} (from {len(valid_correlations)} values)")
+                        return avg_correlation
+                    else:
+                        self.logger.warning(f"❌ {filename}: No correlations in valid range [-1,1]")
+                        return None
+                else:
+                    self.logger.warning(f"❌ {filename}: No numeric values in correlation column")
+                    return None
+            
+            # Fallback: try to find correlation column by position (column index 2 for SYSTEMSEM)
+            elif len(df.columns) >= 3:
+                correlation_col = df.iloc[:, 2]  # Third column (index 2)
+                correlation_values = pd.to_numeric(correlation_col, errors='coerce').dropna()
+                
+                if len(correlation_values) > 0:
+                    # Filter reasonable correlation range
+                    valid_correlations = correlation_values[(correlation_values >= -1.0) & (correlation_values <= 1.0)]
+                    
+                    if len(valid_correlations) > 0:
+                        avg_correlation = float(valid_correlations.mean())
+                        self.logger.debug(f"✅ {filename}: column[2] -> {avg_correlation:.4f} (from {len(valid_correlations)} values)")
+                        return avg_correlation
+                    else:
+                        self.logger.warning(f"❌ {filename}: Column[2] has no valid correlations in range [-1,1]")
+                        return None
+                else:
+                    self.logger.warning(f"❌ {filename}: Column[2] has no numeric values")
+                    return None
+            
+            else:
+                self.logger.warning(f"❌ {filename}: Insufficient columns ({len(df.columns)}). Expected SYSTEMSEM format: cluster,type,correlation,lang1,lang2")
+                return None
+            
+        except Exception as e:
+            self.logger.warning(f"❌ Error calculating correlation for {filename}: {e}")
+            return None
+    
+    def _standardize_language_codes(self, correlations: Dict) -> Dict[str, Dict[str, float]]:
+        """Convert ETS language codes to standard codes and create nested structure"""
+        standardized = {}
+        
+        for pair_key, correlation in correlations.items():
+            lang1, lang2 = pair_key.split('_')
+            
+            # Convert to standard codes
+            std_lang1 = config.LANGUAGE_MAPPING.get(lang1.upper(), lang1.lower())
+            std_lang2 = config.LANGUAGE_MAPPING.get(lang2.upper(), lang2.lower())
+            
+            # Create nested structure
+            if std_lang1 not in standardized:
+                standardized[std_lang1] = {}
+            if std_lang2 not in standardized:
+                standardized[std_lang2] = {}
+            
+            # Add bidirectional mapping
+            standardized[std_lang1][std_lang2] = correlation
+            standardized[std_lang2][std_lang1] = correlation
+        
+        return standardized
+------------------------------------------------- ./src/processors/__init__.py --------------------------------------------------
+
+"""Data processors for different file types"""
+------------------------------------------------- ./src/processors/language_family_processor.py --------------------------------------------------
+
+"""
+Processor for language family and linguistic data
+"""
+
+from pathlib import Path
+from typing import Dict, Any
+from .base_processor import BaseProcessor
+import config
+
+class LanguageFamilyProcessor(BaseProcessor):
+    """Processes language family and linguistic metadata"""
+    
+    def process(self) -> Dict[str, Any]:
+        """
+        Extract language family and related linguistic data
+        Returns: Dict with language family information
+        """
+        families_data = {}
+        
+        # Look for language family files
+        family_files = self.find_files("*language*family*.csv")
+        family_files.extend(self.find_files("*linguistic*.csv"))
+        
+        self.logger.info(f"🌳 Processing {len(family_files)} language family files")
+        
+        for file_path in family_files:
+            self._process_family_file(file_path, families_data)
+        
+        # If no specific family files found, create basic structure from language mapping
+        if not families_data:
+            families_data = self._create_basic_family_structure()
+        
+        self.logger.info(f"✅ Processed family data for {len(families_data)} languages")
+        return families_data
+    
+    def _process_family_file(self, file_path: Path, families_data: Dict):
+        """Process a language family CSV file"""
+        df = self.read_csv_safe(file_path)
+        if df.empty:
+            return
+        
+        # Look for relevant columns
+        lang_col = self._find_column(df, ['language', 'lang', 'code'])
+        family_col = self._find_column(df, ['family', 'group', 'branch'])
+        
+        if lang_col and family_col:
+            for _, row in df.iterrows():
+                lang_code = str(row[lang_col]).lower()
+                family = str(row[family_col])
+                families_data[lang_code] = {
+                    'family': family,
+                    'source': file_path.name
+                }
+    
+    def _find_column(self, df, possible_names):
+        """Find column with any of the possible names"""
+        for col in df.columns:
+            if any(name in col.lower() for name in possible_names):
+                return col
+        return None
+    
+    def _create_basic_family_structure(self) -> Dict[str, Any]:
+        """Create basic language family structure from known language codes"""
+        # Basic language families for the languages in memoria_test
+        basic_families = {
+            'en': {'family': 'Germanic', 'branch': 'West Germanic'},
+            'es': {'family': 'Romance', 'branch': 'Ibero-Romance'},
+            'fr': {'family': 'Romance', 'branch': 'Gallo-Romance'},
+            'de': {'family': 'Germanic', 'branch': 'West Germanic'},
+            'it': {'family': 'Romance', 'branch': 'Italo-Western'},
+            'pt': {'family': 'Romance', 'branch': 'Ibero-Romance'},
+            'ru': {'family': 'Slavic', 'branch': 'East Slavic'},
+            'zh': {'family': 'Sino-Tibetan', 'branch': 'Chinese'},
+            'ja': {'family': 'Japonic', 'branch': 'Japanese'},
+            'ar': {'family': 'Semitic', 'branch': 'Central Semitic'},
+            'hi': {'family': 'Indo-European', 'branch': 'Indo-Aryan'},
+        }
+        
+        # Add all languages from mapping
+        for ets_code, std_code in config.LANGUAGE_MAPPING.items():
+            if std_code not in basic_families:
+                basic_families[std_code] = {
+                    'family': 'Unknown',
+                    'branch': 'Unknown',
+                    'ets_code': ets_code
+                }
+        
+        return basic_families
+------------------------------------------------- ./src/processors/base_processor.py --------------------------------------------------
+
+"""
+Base processor class for data extraction
+"""
+
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Dict, Any, List
+import pandas as pd
+from ..utils.logger import setup_logger
+
+class BaseProcessor(ABC):
+    """Abstract base class for data processors"""
+    
+    def __init__(self, systemsem_path: Path):
+        self.systemsem_path = systemsem_path
+        self.logger = setup_logger(self.__class__.__name__)
+    
+    @abstractmethod
+    def process(self) -> Dict[str, Any]:
+        """Process data and return structured results"""
+        pass
+    
+    def find_files(self, pattern: str, subdirs: List[str] = None) -> List[Path]:
+        """Find files matching pattern in specified subdirectories"""
+        files = []
+        
+        if subdirs:
+            for subdir in subdirs:
+                search_path = self.systemsem_path / subdir
+                if search_path.exists():
+                    files.extend(search_path.rglob(pattern))
+        else:
+            files.extend(self.systemsem_path.rglob(pattern))
+        
+        self.logger.debug(f"Found {len(files)} files matching '{pattern}'")
+        return files
+    
+    def read_csv_safe(self, file_path: Path) -> pd.DataFrame:
+        """Safely read CSV file with error handling"""
+        try:
+            # SYSTEMSEM correlation files have NO HEADERS
+            # Format: cluster_count,type,correlation,lang1,lang2
+            # Example: 10,global,0.364,en,tr
+            
+            read_strategies = [
+                # Strategy 1: No header (correct for SYSTEMSEM files)
+                {'header': None, 'encoding': 'utf-8'},
+                # Strategy 2: Different separators without header
+                {'header': None, 'encoding': 'utf-8', 'sep': ','},
+                {'header': None, 'encoding': 'utf-8', 'sep': '\t'},
+                # Strategy 3: Different encodings without header
+                {'header': None, 'encoding': 'latin-1'},
+                {'header': None, 'encoding': 'cp1252'},
+                # Strategy 4: Skip problematic lines without header
+                {'header': None, 'encoding': 'utf-8', 'on_bad_lines': 'skip'},
+            ]
+            
+            for i, strategy in enumerate(read_strategies):
+                try:
+                    df = pd.read_csv(file_path, **strategy)
+                    if not df.empty and len(df.columns) >= 3:
+                        # Assign proper column names for SYSTEMSEM format
+                        df.columns = ['n_clusters', 'type', 'correlation', 'lang1', 'lang2'][:len(df.columns)]
+                        self.logger.debug(f"✅ Read {file_path.name} with strategy {i+1}: {len(df)} rows, {len(df.columns)} cols")
+                        return df
+                except (UnicodeDecodeError, pd.errors.ParserError) as e:
+                    self.logger.debug(f"Strategy {i+1} failed for {file_path.name}: {e}")
+                    continue
+                except Exception as e:
+                    self.logger.debug(f"Strategy {i+1} error for {file_path.name}: {e}")
+                    continue
+            
+            # Last resort: read with maximum error tolerance
+            try:
+                df = pd.read_csv(file_path, header=None, encoding='utf-8', errors='ignore', 
+                               on_bad_lines='skip', engine='python')
+                if not df.empty and len(df.columns) >= 3:
+                    df.columns = ['n_clusters', 'type', 'correlation', 'lang1', 'lang2'][:len(df.columns)]
+                self.logger.warning(f"⚠️ Read {file_path.name} with error tolerance: {len(df)} rows")
+                return df
+            except Exception as e:
+                self.logger.error(f"❌ All strategies failed for {file_path.name}: {e}")
+                return pd.DataFrame()
+            
+        except Exception as e:
+            self.logger.warning(f"❌ Completely failed to read {file_path}: {e}")
+            return pd.DataFrame()
+    
+    def extract_language_pair(self, filename: str) -> tuple:
+        """Extract language pair from filename"""
+        # Common patterns: "lang1_lang2.csv" or "correlations_lang1_lang2.csv"
+        parts = filename.replace('.csv', '').split('_')
+        
+        # Look for language codes (typically 2-3 characters)
+        lang_codes = [part for part in parts if len(part) in [2, 3] and part.isalpha()]
+        
+        if len(lang_codes) >= 2:
+            return lang_codes[-2], lang_codes[-1]  # Last two are usually the languages
+        
+        return None, None
+------------------------------------------------- ./src/generators/__init__.py --------------------------------------------------
+
+"""JSON file generators"""
+------------------------------------------------- ./src/generators/json_generator.py --------------------------------------------------
+
+"""
+JSON file generator for extracted data
+"""
+
+import json
+from pathlib import Path
+from typing import Dict, Any
+from ..utils.logger import setup_logger
+import config
+
+class JsonGenerator:
+    """Generates JSON files from extracted data"""
+    
+    def __init__(self):
+        self.logger = setup_logger(self.__class__.__name__)
+        self.output_dir = config.OUTPUT_DIR
+    
+    def generate_correlations_json(self, correlations_data: Dict[str, Any]) -> str:
+        """Generate systemsem_correlations.json file"""
+        output_file = self.output_dir / "systemsem_correlations.json"
+        
+        # Add metadata
+        output_data = {
+            "metadata": {
+                "description": "Language semantic similarity correlations from SYSTEMSEM research",
+                "source": "SYSTEMSEM project - Local similarity and global variability paper",
+                "extracted_by": "systemsem_extractor",
+                "language_pairs": len(correlations_data)
+            },
+            "correlations": correlations_data
+        }
+        
+        self._write_json(output_data, output_file)
+        self.logger.info(f"📄 Generated correlations JSON: {output_file}")
+        return str(output_file)
+    
+    def generate_families_json(self, families_data: Dict[str, Any]) -> str:
+        """Generate language_families.json file"""
+        output_file = self.output_dir / "language_families.json"
+        
+        output_data = {
+            "metadata": {
+                "description": "Language family classifications and relationships",
+                "languages_count": len(families_data)
+            },
+            "families": families_data
+        }
+        
+        self._write_json(output_data, output_file)
+        self.logger.info(f"🌳 Generated families JSON: {output_file}")
+        return str(output_file)
+    
+    def generate_contact_json(self, contact_data: Dict[str, Any]) -> str:
+        """Generate historical_contact.json file"""
+        output_file = self.output_dir / "historical_contact.json"
+        
+        output_data = {
+            "metadata": {
+                "description": "Historical language contact information",
+            },
+            "contact_data": contact_data
+        }
+        
+        self._write_json(output_data, output_file)
+        self.logger.info(f"📚 Generated contact JSON: {output_file}")
+        return str(output_file)
+    
+    def _write_json(self, data: Dict[str, Any], file_path: Path):
+        """Write data to JSON file with pretty formatting"""
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            self.logger.debug(f"Wrote JSON to {file_path}")
+        except Exception as e:
+            self.logger.error(f"Failed to write JSON to {file_path}: {e}")
+            raise
