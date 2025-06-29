@@ -41,7 +41,6 @@ find . -type f \
     ! -name "*.ico" \
     ! -name "*.txt" \
     ! -name "*.log" \
-    ! -name "*.json" \
     ! -name "*.md" \
     ! -name "*.min.js" \
     ! -name "*.lock" \
