@@ -57,6 +57,9 @@ class JsonGenerator:
         output_data = {
             "metadata": {
                 "description": "Historical language contact information",
+                "source": "SYSTEMSEM extraction + linguistic fallback",
+                "format": "language_code -> [list of contacted languages]",
+                "contact_pairs": len(contact_data)
             },
             "contact_data": contact_data
         }

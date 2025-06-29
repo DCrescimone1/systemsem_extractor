@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "description": "Historical language contact information",
+    "source": "SYSTEMSEM extraction + linguistic fallback",
+    "format": "language_code -> [list of contacted languages]",
+    "contact_pairs": 17
+  },
+  "contact_data": {
+    "en": [
+      "fr",
+      "de",
+      "nl",
+      "es",
+      "it"
+    ],
+    "fr": [
+      "en",
+      "de",
+      "it",
+      "es",
+      "nl"
+    ],
+    "de": [
+      "en",
+      "fr",
+      "nl",
+      "pl",
+      "it"
+    ],
+    "es": [
+      "fr",
+      "it",
+      "pt",
+      "en"
+    ],
+    "it": [
+      "fr",
+      "es",
+      "de"
+    ],
+    "pt": [
+      "es",
+      "fr"
+    ],
+    "nl": [
+      "en",
+      "de",
+      "fr"
+    ],
+    "ru": [
+      "pl",
+      "bg",
+      "de"
+    ],
+    "pl": [
+      "de",
+      "ru"
+    ],
+    "bg": [
+      "ru",
+      "el"
+    ],
+    "hi": [
+      "ur",
+      "bn",
+      "fa"
+    ],
+    "ur": [
+      "hi",
+      "fa",
+      "ar"
+    ],
+    "bn": [
+      "hi"
+    ],
+    "ar": [
+      "fa",
+      "tr",
+      "ur"
+    ],
+    "fa": [
+      "ar",
+      "hi",
+      "ur",
+      "tr"
+    ],
+    "tr": [
+      "ar",
+      "fa",
+      "bg"
+    ],
+    "el": [
+      "bg",
+      "it"
+    ]
+  }
+}
