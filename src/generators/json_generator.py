@@ -16,22 +16,21 @@ class JsonGenerator:
         self.output_dir = config.OUTPUT_DIR
     
     def generate_correlations_json(self, correlations_data: Dict[str, Any]) -> str:
-        """Generate systemsem_correlations.json file"""
-        output_file = self.output_dir / "systemsem_correlations.json"
+        """Generate language_correlations.json file with simplified format"""
+        output_file = self.output_dir / "language_correlations.json"
         
-        # Add metadata
-        output_data = {
-            "metadata": {
-                "description": "Language semantic similarity correlations from SYSTEMSEM research",
-                "source": "SYSTEMSEM project - Local similarity and global variability paper",
-                "extracted_by": "systemsem_extractor",
-                "language_pairs": len(correlations_data)
-            },
-            "correlations": correlations_data
-        }
+        # Create simplified flat format with just the global correlation values
+        simplified_correlations = {}
+        for pair, data in correlations_data.items():
+            if isinstance(data, dict) and 'global' in data:
+                simplified_correlations[pair] = data['global']
+            else:
+                simplified_correlations[pair] = data  # In case it's already simplified
+        
+        output_data = simplified_correlations
         
         self._write_json(output_data, output_file)
-        self.logger.info(f"📄 Generated correlations JSON: {output_file}")
+        self.logger.info(f"📄 Generated simplified correlations JSON: {output_file}")
         return str(output_file)
     
     def generate_families_json(self, families_data: Dict[str, Any]) -> str:
@@ -51,21 +50,14 @@ class JsonGenerator:
         return str(output_file)
     
     def generate_contact_json(self, contact_data: Dict[str, Any]) -> str:
-        """Generate historical_contact.json file"""
+        """Generate historical_contact.json file with simplified format"""
         output_file = self.output_dir / "historical_contact.json"
         
-        output_data = {
-            "metadata": {
-                "description": "Historical language contact information",
-                "source": "SYSTEMSEM extraction + linguistic fallback",
-                "format": "language_code -> [list of contacted languages]",
-                "contact_pairs": len(contact_data)
-            },
-            "contact_data": contact_data
-        }
+        # Output simplified flat format
+        output_data = contact_data
         
         self._write_json(output_data, output_file)
-        self.logger.info(f"📚 Generated contact JSON: {output_file}")
+        self.logger.info(f"📚 Generated simplified contact JSON: {output_file}")
         return str(output_file)
     
     def _write_json(self, data: Dict[str, Any], file_path: Path):
